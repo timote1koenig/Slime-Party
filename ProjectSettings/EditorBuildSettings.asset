@@ -8,6 +8,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Packages/com.unity.multiplayer.getting-started.casual/Example.unity
+    guid: 94659d20428b566959ae961951f03a7c
+  - enabled: 1
+    path: Assets/Scenes/MultiplayerScene.unity
+    guid: 57b43fab34c4840419032134b301c092
+  - enabled: 1
+    path: Assets/Scenes/SecondMiniGameScene.unity
+    guid: 396f92f2f66f4974e823f822238f1a11
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  m_UseUCBPForAssetBundles: 0
