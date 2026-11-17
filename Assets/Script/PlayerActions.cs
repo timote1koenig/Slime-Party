@@ -33,14 +33,15 @@ public class PlayerActions : MonoBehaviour
     [SerializeField] private float attackLockTime = 0.8f;
     [SerializeField] private float hitLockTime = 0.5f;
 
-    private static readonly int SpeedHash = Animator.StringToHash("Speed");
-    private static readonly int InCombatHash = Animator.StringToHash("InCombat");
-    private static readonly int AttackHash = Animator.StringToHash("Attack");
-    private static readonly int ComboHash = Animator.StringToHash("ComboIndex");
-    private static readonly int GetHitHash = Animator.StringToHash("GetHit");
     private static readonly int DieHash = Animator.StringToHash("Die");
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int TauntHash = Animator.StringToHash("Taunt");
     private static readonly int DizzyHash = Animator.StringToHash("Dizzy");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int GetHitHash = Animator.StringToHash("GetHit");
+    private static readonly int VictoryHash = Animator.StringToHash("Victory");
+    private static readonly int InCombatHash = Animator.StringToHash("InCombat");
+    private static readonly int SenseSomethingHash = Animator.StringToHash("SenseSomething");
 
     private CharacterController controller;
     private Vector3 horizontalVelocity;
@@ -296,6 +297,16 @@ public class PlayerActions : MonoBehaviour
 
         animator.SetBool(DizzyHash, false);
         animator.SetTrigger(DieHash);
+    }
+
+    public void Win(bool value)
+    {
+        animator.SetBool(VictoryHash, value);
+    }
+
+    public void SenseSomething(bool value)
+    {
+        animator.SetBool(SenseSomethingHash, value);
     }
 
     // ------------------------------------------------------------------
