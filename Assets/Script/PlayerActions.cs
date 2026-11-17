@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
-public class PlayerActions : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     [Header("Input Actions")]
     [SerializeField] private InputActionReference moveAction;
@@ -27,21 +27,23 @@ public class PlayerActions : MonoBehaviour
     [Header("Camera (optional)")]
     [Tooltip("If set, movement is relative to this camera. Leave empty to use Camera.main.")]
     [SerializeField] private Transform cameraTransform;
+    [Tooltip("Optional. Lets the controls change depending on the camera view. Found automatically if empty.")]
+    [SerializeField] private CameraViewSwitcher cameraViews;
 
     [Header("Animation")]
     [Tooltip("How long movement is locked after each action (seconds). Match your clip lengths.")]
     [SerializeField] private float attackLockTime = 0.8f;
     [SerializeField] private float hitLockTime = 0.5f;
+    [SerializeField] private int attackComboCount = 2;
 
-    private static readonly int DieHash = Animator.StringToHash("Die");
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private static readonly int InCombatHash = Animator.StringToHash("InCombat");
+    private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private static readonly int ComboHash = Animator.StringToHash("ComboIndex");
+    private static readonly int GetHitHash = Animator.StringToHash("GetHit");
+    private static readonly int DieHash = Animator.StringToHash("Die");
     private static readonly int TauntHash = Animator.StringToHash("Taunt");
     private static readonly int DizzyHash = Animator.StringToHash("Dizzy");
-    private static readonly int AttackHash = Animator.StringToHash("Attack");
-    private static readonly int GetHitHash = Animator.StringToHash("GetHit");
-    private static readonly int VictoryHash = Animator.StringToHash("Victory");
-    private static readonly int InCombatHash = Animator.StringToHash("InCombat");
-    private static readonly int SenseSomethingHash = Animator.StringToHash("SenseSomething");
 
     private CharacterController controller;
     private Vector3 horizontalVelocity;
@@ -51,6 +53,7 @@ public class PlayerActions : MonoBehaviour
     private bool isDizzy;
     private bool isTaunting;
     private bool inCombat;
+    private int comboIndex;
     private float lockTimer;
     private Animator animator;
     private Coroutine stunRoutine;
@@ -69,6 +72,9 @@ public class PlayerActions : MonoBehaviour
 
         if (cameraTransform == null && Camera.main != null)
             cameraTransform = Camera.main.transform;
+
+        if (cameraViews == null)
+            cameraViews = FindFirstObjectByType<CameraViewSwitcher>();
     }
 
     private void OnEnable()
@@ -124,7 +130,14 @@ public class PlayerActions : MonoBehaviour
             targetVelocity,
             acceleration * Time.deltaTime * targetSpeed);
 
-        if (moveDir.sqrMagnitude > 0.001f)
+        bool firstPerson = cameraViews != null && cameraViews.Mode == CameraViewMode.FirstPerson;
+
+        if (firstPerson)
+        {
+            if (!isDead)
+                transform.rotation = Quaternion.Euler(0f, cameraViews.Yaw, 0f);
+        }
+        else if (moveDir.sqrMagnitude > 0.001f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDir);
             transform.rotation = Quaternion.Slerp(
@@ -151,7 +164,13 @@ public class PlayerActions : MonoBehaviour
         Vector3 forward = Vector3.forward;
         Vector3 right = Vector3.right;
 
-        if (cameraTransform != null)
+        if (cameraViews != null && cameraViews.Mode != CameraViewMode.Original)
+        {
+            Quaternion yawRotation = Quaternion.Euler(0f, cameraViews.Yaw, 0f);
+            forward = yawRotation * Vector3.forward;
+            right = yawRotation * Vector3.right;
+        }
+        else if (cameraTransform != null)
         {
             forward = cameraTransform.forward;
             right = cameraTransform.right;
@@ -173,12 +192,8 @@ public class PlayerActions : MonoBehaviour
     {
         if (isDead) return;
 
-        // Any other action (moving, jumping, attacking...) ends the taunt
         if (isTaunting && WantsToCancelTaunt())
-        {
             StopTaunt();
-            return;
-        }
 
         if (toggleCombatAction != null && toggleCombatAction.action.WasPressedThisFrame())
             SetCombat(!inCombat);
@@ -208,7 +223,9 @@ public class PlayerActions : MonoBehaviour
 
         SetCombat(true);
 
+        animator.SetInteger(ComboHash, comboIndex);
         animator.SetTrigger(AttackHash);
+        comboIndex = (comboIndex + 1) % Mathf.Max(1, attackComboCount);
 
         lockTimer = attackLockTime;
     }
@@ -236,8 +253,7 @@ public class PlayerActions : MonoBehaviour
 
         return WasPressed(jumpAction)
             || WasPressed(attackAction)
-            || WasPressed(toggleCombatAction)
-            || WasPressed(tauntAction);
+            || WasPressed(toggleCombatAction);
     }
 
     private static bool WasPressed(InputActionReference reference)
@@ -297,16 +313,6 @@ public class PlayerActions : MonoBehaviour
 
         animator.SetBool(DizzyHash, false);
         animator.SetTrigger(DieHash);
-    }
-
-    public void Win(bool value)
-    {
-        animator.SetBool(VictoryHash, value);
-    }
-
-    public void SenseSomething(bool value)
-    {
-        animator.SetBool(SenseSomethingHash, value);
     }
 
     // ------------------------------------------------------------------
