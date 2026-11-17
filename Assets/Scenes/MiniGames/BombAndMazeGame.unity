@@ -119,37 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &22154471
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 22154472}
-  m_Layer: 0
-  m_Name: test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &22154472
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 22154471}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &324601880
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,9 +175,12 @@ MonoBehaviour:
   floorPrefab: {fileID: 4424280597332156990, guid: 86df354c9a587b9429f9d3cafd4bc727, type: 3}
   wallPrefab: {fileID: 7344145066455357392, guid: 40ab45c76daf78b4ea385cc71964c723, type: 3}
   generateOnStart: 1
-  playerNb: 4
   cameraAnimator: {fileID: 594297377}
-  playerPrefab: {fileID: 22154471}
+  playersPrefab:
+  - {fileID: 3065795077267144384, guid: c7c5f8667a2cd1240af12c19af93634d, type: 3}
+  - {fileID: 8870070216501815479, guid: d8fc412d9fdc81e4ca1094fa4d185e23, type: 3}
+  - {fileID: 2534781360560485378, guid: ebac6461d392c8e419b38b6bde827981, type: 3}
+  - {fileID: 1931298151966786, guid: 928a1377c1cd4515b208fef3a396b8ea, type: 3}
 --- !u!114 &324601883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -510,4 +482,3 @@ SceneRoots:
   - {fileID: 594297375}
   - {fileID: 1824873255}
   - {fileID: 324601881}
-  - {fileID: 22154472}

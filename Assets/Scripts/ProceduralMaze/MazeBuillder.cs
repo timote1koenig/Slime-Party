@@ -26,13 +26,12 @@ public class MazeBuilder : MonoBehaviour
 
     [Header("Generation")]
     [SerializeField] private bool generateOnStart = true;
-    [SerializeField, Range(2, 10)] private int playerNb = 4;
 
     [Header("Camera Animation")]
     [SerializeField] private MazeCameraAnimator cameraAnimator;
 
     [Header("Player Spawn")]
-    [SerializeField] GameObject playerPrefab;
+    [SerializeField] List<GameObject>playersPrefab;
 
     private static readonly WaitForSeconds _mazeBuilderWaitForSeconds = new(0.005f);
 
@@ -79,7 +78,7 @@ public class MazeBuilder : MonoBehaviour
 
         Vector3 center = new((width * cellSize) / 2f - (cellSize / 2f), 0f, (height * cellSize) / 2f - (cellSize / 2f));
 
-        spawnCells = MazeGenerator.GenerateSpawns(maze, playerNb, seed, 12, 2);
+        spawnCells = MazeGenerator.GenerateSpawns(maze, playersPrefab.Count, seed, 12, 2);
 
         cameraAnimator.BeginOrbit(center);
 
@@ -109,9 +108,13 @@ public class MazeBuilder : MonoBehaviour
                     CreateWall(cellPosition - Vector3.right * (cellSize / 2f), Quaternion.Euler(0f, 90f, 0f));
             }
         }
-        var player = GameObject.Instantiate(playerPrefab, new Vector3(spawnCells[0].x * cellSize, 0f, spawnCells[0].y * cellSize), Quaternion.identity);
 
-        yield return StartCoroutine(cameraAnimator.FinishOrbit(player.transform, 2f));
+        List<GameObject> players = new();
+
+        for (int i = 0; i < playersPrefab.Count; i++)
+            players.Add(Instantiate(playersPrefab[i], new Vector3(spawnCells[i].x * cellSize, 0f, spawnCells[i].y * cellSize), Quaternion.identity, generatedRoot));
+
+        yield return StartCoroutine(cameraAnimator.FinishOrbit(players[0].transform, 2f));
     }
 
     private void CreateFloor(Vector3 position, int width, int height)
