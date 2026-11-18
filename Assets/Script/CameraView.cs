@@ -12,13 +12,10 @@ public class CameraViewSwitcher : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Camera cam;
-    [Tooltip("The player (the object with PlayerMovement).")]
-    [SerializeField] private Transform target;
-    [Tooltip("Used for first person (empty object at eye height, child of the player).")]
+    [Tooltip("Used for first person (empty object at eye height, child of the player). Also the orbit pivot in third person.")]
     [SerializeField] private Transform headPoint;
-    [Tooltip("Used for third person: only its distance from the player is used as the orbit distance.")]
+    [Tooltip("Used for third person: only its distance from the head point is used as the orbit distance.")]
     [SerializeField] private Transform ThirdPersonPoint;
-    [Tooltip("Optional. Renderers of this object are hidden in first person (true first person).")]
 
     [Header("Input Actions")]
     [SerializeField] private InputActionReference lookAction;
@@ -31,17 +28,12 @@ public class CameraViewSwitcher : MonoBehaviour
     [SerializeField] private bool originalFollowsPlayer = false;
 
     [Header("Third Person")]
-    [Tooltip("Height above the player's feet that the camera orbits and looks at.")]
-    [SerializeField] private float thirdPersonLookHeight = 1.5f;
-    [SerializeField] private float fallbackDistance = 4f;
     [SerializeField] private Vector2 thirdPersonPitchLimits = new Vector2(-20f, 60f);
 
     [Header("First Person")]
-    [SerializeField] private float eyeHeightFallback = 1.6f;
     [SerializeField] private float firstPersonNearClip = 0.05f;
     [SerializeField] private Vector2 firstPersonPitchLimits = new Vector2(-80f, 80f);
 
-    // Read by PlayerMovement so the controls can depend on the view
     public CameraViewMode Mode => mode;
     public float Yaw => yaw;
 
@@ -62,50 +54,42 @@ public class CameraViewSwitcher : MonoBehaviour
 
     private void Awake()
     {
-        if (cam == null) cam = Camera.main;
         originalNearClip = cam.nearClipPlane;
     }
 
     private void OnEnable()
     {
-        if (lookAction != null) lookAction.action.Enable();
+        lookAction.action.Enable();
     }
 
     private void OnDisable()
     {
-        if (lookAction != null) lookAction.action.Disable();
+        lookAction.action.Disable();
     }
 
     private void Start()
     {
         originalPosition = cam.transform.position;
-        originalOffset = cam.transform.position - target.position;
+        originalOffset = cam.transform.position - transform.position;
         originalRotation = cam.transform.rotation;
 
-        thirdPersonDistance = fallbackDistance;
-        if (ThirdPersonPoint != null)
-        {
-            Vector3 pivot = target.position + Vector3.up * thirdPersonLookHeight;
-            float distance = Vector3.Distance(ThirdPersonPoint.position, pivot);
-            if (distance > 0.5f) thirdPersonDistance = distance;
-        }
+        thirdPersonDistance = Vector3.Distance(ThirdPersonPoint.position, headPoint.position);
 
         SetMode(startMode, instant: true);
     }
 
     private void Update()
     {
-        if (mode != CameraViewMode.Original && lookAction != null)
-        {
-            Vector2 look = lookAction.action.ReadValue<Vector2>();
-            yaw += look.x * lookSensitivity;
-            pitch -= look.y * lookSensitivity;
+        if (mode == CameraViewMode.Original) return;
 
-            Vector2 limits = mode == CameraViewMode.FirstPerson
-                ? firstPersonPitchLimits
-                : thirdPersonPitchLimits;
-            pitch = Mathf.Clamp(pitch, limits.x, limits.y);
-        }
+        Vector2 look = lookAction.action.ReadValue<Vector2>();
+        yaw += look.x * lookSensitivity;
+        pitch -= look.y * lookSensitivity;
+
+        Vector2 limits = mode == CameraViewMode.FirstPerson
+            ? firstPersonPitchLimits
+            : thirdPersonPitchLimits;
+        pitch = Mathf.Clamp(pitch, limits.x, limits.y);
     }
 
     private void LateUpdate()
@@ -135,12 +119,11 @@ public class CameraViewSwitcher : MonoBehaviour
 
         if (mode != CameraViewMode.Original)
         {
-            yaw = target.eulerAngles.y;
+            yaw = transform.eulerAngles.y;
             pitch = mode == CameraViewMode.FirstPerson ? 0f : 15f;
         }
 
-        bool firstPerson = mode == CameraViewMode.FirstPerson;
-        cam.nearClipPlane = firstPerson ? firstPersonNearClip : originalNearClip;
+        cam.nearClipPlane = mode == CameraViewMode.FirstPerson ? firstPersonNearClip : originalNearClip;
 
         Cursor.lockState = mode == CameraViewMode.Original ? CursorLockMode.None : CursorLockMode.Locked;
         Cursor.visible = mode == CameraViewMode.Original;
@@ -153,21 +136,18 @@ public class CameraViewSwitcher : MonoBehaviour
         switch (mode)
         {
             case CameraViewMode.ThirdPerson:
-                Vector3 pivot = target.position + Vector3.up * thirdPersonLookHeight;
-                position = pivot - lookRotation * Vector3.forward * thirdPersonDistance;
+                position = headPoint.position - lookRotation * Vector3.forward * thirdPersonDistance;
                 rotation = lookRotation;
                 break;
 
             case CameraViewMode.FirstPerson:
-                position = headPoint != null
-                    ? headPoint.position
-                    : target.position + Vector3.up * eyeHeightFallback;
+                position = headPoint.position;
                 rotation = lookRotation;
                 break;
 
             default:
                 position = originalFollowsPlayer
-                    ? target.position + originalOffset
+                    ? transform.position + originalOffset
                     : originalPosition;
                 rotation = originalRotation;
                 break;

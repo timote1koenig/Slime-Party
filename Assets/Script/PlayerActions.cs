@@ -39,11 +39,12 @@ public class PlayerMovement : MonoBehaviour
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int InCombatHash = Animator.StringToHash("InCombat");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
-    private static readonly int ComboHash = Animator.StringToHash("ComboIndex");
     private static readonly int GetHitHash = Animator.StringToHash("GetHit");
     private static readonly int DieHash = Animator.StringToHash("Die");
     private static readonly int TauntHash = Animator.StringToHash("Taunt");
     private static readonly int DizzyHash = Animator.StringToHash("Dizzy");
+    private static readonly int SenseSomethingHash = Animator.StringToHash("SenseSomething");
+    private static readonly int VictoryHash = Animator.StringToHash("Victory");
 
     private CharacterController controller;
     private Vector3 horizontalVelocity;
@@ -53,7 +54,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isDizzy;
     private bool isTaunting;
     private bool inCombat;
-    private int comboIndex;
     private float lockTimer;
     private Animator animator;
     private Coroutine stunRoutine;
@@ -74,7 +74,7 @@ public class PlayerMovement : MonoBehaviour
             cameraTransform = Camera.main.transform;
 
         if (cameraViews == null)
-            cameraViews = FindFirstObjectByType<CameraViewSwitcher>();
+            cameraViews = GetComponent<CameraViewSwitcher>();
     }
 
     private void OnEnable()
@@ -166,6 +166,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (cameraViews != null && cameraViews.Mode != CameraViewMode.Original)
         {
+            // Third / first person: movement follows the mouse-controlled direction
             Quaternion yawRotation = Quaternion.Euler(0f, cameraViews.Yaw, 0f);
             forward = yawRotation * Vector3.forward;
             right = yawRotation * Vector3.right;
@@ -192,6 +193,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isDead) return;
 
+        // Any other action (moving, jumping, attacking...) ends the taunt
         if (isTaunting && WantsToCancelTaunt())
             StopTaunt();
 
@@ -223,13 +225,12 @@ public class PlayerMovement : MonoBehaviour
 
         SetCombat(true);
 
-        animator.SetInteger(ComboHash, comboIndex);
         animator.SetTrigger(AttackHash);
-        comboIndex = (comboIndex + 1) % Mathf.Max(1, attackComboCount);
 
         lockTimer = attackLockTime;
     }
 
+    /// <summary>Starts the taunt. It loops until another action cancels it.</summary>
     public void PlayTaunt()
     {
         if (!CanAct || isTaunting) return;
@@ -313,6 +314,22 @@ public class PlayerMovement : MonoBehaviour
 
         animator.SetBool(DizzyHash, false);
         animator.SetTrigger(DieHash);
+    }
+
+    public void Victory(bool value)
+    {
+        if (isDead) return;
+        if (value)
+            StopTaunt();
+        animator.SetBool(VictoryHash, value);
+    }
+
+    public void SenseSomething(bool value)
+    {
+        if (isDead) return;
+        if (value)
+            StopTaunt();
+        animator.SetBool(SenseSomethingHash, value);
     }
 
     // ------------------------------------------------------------------

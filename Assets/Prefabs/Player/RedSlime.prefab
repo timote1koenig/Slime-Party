@@ -280,7 +280,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d9c0226bd4324f01bc178cf4a515ef84, type: 2}
+  - {fileID: 2100000, guid: 649374f462020664c93be2b93f9b177e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -432,6 +432,7 @@ GameObject:
   - component: {fileID: 4047972025199878}
   - component: {fileID: 95457531584545886}
   - component: {fileID: 297894472126712160}
+  - component: {fileID: 7654557333404092257}
   - component: {fileID: 8235043391616622615}
   m_Layer: 0
   m_Name: RedSlime
@@ -455,6 +456,8 @@ Transform:
   m_Children:
   - {fileID: 4065624273618060}
   - {fileID: 4358697761044548}
+  - {fileID: 1435220058696983193}
+  - {fileID: 7989070309356483766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &95457531584545886
@@ -504,8 +507,33 @@ MonoBehaviour:
   jumpHeight: 1.5
   gravity: -20
   cameraTransform: {fileID: 0}
+  cameraViews: {fileID: 7654557333404092257}
   attackLockTime: 0.8
   hitLockTime: 0.5
+  attackComboCount: 2
+--- !u!114 &7654557333404092257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1931298151966786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc683c2d9be0e343b91b7e92d93f03c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  cam: {fileID: 0}
+  headPoint: {fileID: 1435220058696983193}
+  ThirdPersonPoint: {fileID: 7989070309356483766}
+  lookAction: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  startMode: 0
+  transitionTime: 0.35
+  lookSensitivity: 0.12
+  originalFollowsPlayer: 0
+  thirdPersonPitchLimits: {x: 10, y: 60}
+  firstPersonNearClip: 0.05
+  firstPersonPitchLimits: {x: -80, y: 80}
 --- !u!143 &8235043391616622615
 CharacterController:
   m_ObjectHideFlags: 0
@@ -531,3 +559,65 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!1 &2018570001314270202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7989070309356483766}
+  m_Layer: 0
+  m_Name: ThirdPersonPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7989070309356483766
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2018570001314270202}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.28145364, y: 0.0023568796, z: -0.00063217897, w: 0.9595717}
+  m_LocalPosition: {x: -0.26051605, y: 4.3083634, z: -5.539363}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4047972025199878}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7727985047108819921
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1435220058696983193}
+  m_Layer: 0
+  m_Name: FirstPesonPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1435220058696983193
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7727985047108819921}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.501, z: 0.577}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4047972025199878}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
