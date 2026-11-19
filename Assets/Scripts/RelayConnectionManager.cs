@@ -1,19 +1,20 @@
-
 using System;
 using System.Threading.Tasks;
-using UnityEngine;
+using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-
-using Unity.Services.Core;
 using Unity.Services.Authentication;
+using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
+using UnityEngine;
 
 public class RelayConnectionManager : MonoBehaviour
 {
     private string joinCode = "";
-    private string status = "Waiting...";
+    private string status = "";
+    [SerializeField] private TMP_InputField joinCodeInput;
+    [SerializeField] private RelayUI relay;
 
     private bool isConnecting = false;
 
@@ -35,8 +36,11 @@ public class RelayConnectionManager : MonoBehaviour
         if (isConnecting || NetworkManager.Singleton.IsListening)
             return;
 
+        relay.HostSelected();
+
         isConnecting = true;
         status = "Creating room...";
+        relay.SetStatus(status);
 
         try
         {
@@ -60,7 +64,9 @@ public class RelayConnectionManager : MonoBehaviour
             if (NetworkManager.Singleton.StartHost())
             {
                 joinCode = code;
+                relay.SetHostCode(joinCode);
                 status = "Room created!";
+                relay.SetStatus(status);
                 Debug.Log("Relay Code : " + joinCode);
             }
             else
@@ -84,14 +90,18 @@ public class RelayConnectionManager : MonoBehaviour
         if (isConnecting || NetworkManager.Singleton.IsListening)
             return;
 
+        relay.JoinSelected();
+
         if (string.IsNullOrWhiteSpace(joinCode))
         {
             status = "Enter a Relay code.";
+            relay.SetStatus(status);
             return;
         }
 
         isConnecting = true;
         status = "Connecting to the room...";
+        relay.SetStatus(status);
 
         try
         {
@@ -110,10 +120,12 @@ public class RelayConnectionManager : MonoBehaviour
             if (NetworkManager.Singleton.StartClient())
             {
                 status = "Connection in progress...";
+                relay.SetStatus(status);
             }
             else
             {
                 status = "Failed to start the client.";
+                relay.SetStatus(status);
             }
         }
         catch (Exception e)
@@ -124,25 +136,19 @@ public class RelayConnectionManager : MonoBehaviour
         finally
         {
             isConnecting = false;
+            status = "Connected.";
+            relay.JoinSuccess();
+            relay.SetStatus(status);
         }
     }
-
-    private void OnGUI()
+    public void OnHostButtonClicked()
     {
-        GUILayout.BeginArea(new Rect(20, 20, 300, 180));
+        StartHostWithRelay();
+    }
 
-        GUILayout.Label("RELAY MULTIPLAYER");
-        GUILayout.Label("Status : " + status);
-
-        GUILayout.Label("Join Code :");
-        joinCode = GUILayout.TextField(joinCode, 20);
-
-        if (NetworkManager.Singleton != null &&
-            NetworkManager.Singleton.IsHost)
-        {
-            GUILayout.Label("Your Code : " + joinCode);
-        }
-
-        GUILayout.EndArea();
+    public void OnJoinButtonClicked()
+    {
+        joinCode = joinCodeInput.text;
+        StartClientWithRelay();
     }
 }
