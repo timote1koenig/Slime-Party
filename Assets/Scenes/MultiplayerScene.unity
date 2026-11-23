@@ -530,6 +530,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98fb11dd8edd1054daa2eae9142acd8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MiniGameLauncher
+  miniGameScenes:
+  - SampleScene
+  - SecondMiniGameScene
 --- !u!1 &556009639
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,6 +1200,7 @@ GameObject:
   - component: {fileID: 1161137100}
   - component: {fileID: 1161137099}
   - component: {fileID: 1161137098}
+  - component: {fileID: 1161137101}
   m_Layer: 5
   m_Name: StartButton
   m_TagString: Untagged
@@ -1267,19 +1271,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1161137099}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 493667155}
-        m_TargetAssemblyTypeName: MiniGameLauncher, Assembly-CSharp
-        m_MethodName: LoadNextGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: OnHostButtonClicked()
-          m_BoolArgument: 0
-        m_CallState: 1
+      m_Calls: []
 --- !u!114 &1161137099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1318,6 +1310,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1161137096}
   m_CullTransparentMesh: 1
+--- !u!114 &1161137101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1161137096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca80cb9e1743894ea353e73067612b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1185559712
 GameObject:
   m_ObjectHideFlags: 0

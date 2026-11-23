@@ -11,12 +11,25 @@ using UnityEngine;
 
 public class RelayConnectionManager : MonoBehaviour
 {
+    public static RelayConnectionManager Instance { get; private set; }
     private string joinCode = "";
     private string status = "";
     [SerializeField] private TMP_InputField joinCodeInput;
     [SerializeField] private RelayUI relay;
 
     private bool isConnecting = false;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     private async Task InitializeServices()
     {
