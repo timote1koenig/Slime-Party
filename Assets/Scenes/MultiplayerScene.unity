@@ -531,7 +531,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MiniGameLauncher
   miniGameScenes:
-  - SampleScene
+  - FirstMiniGameScene
   - SecondMiniGameScene
 --- !u!1 &556009639
 GameObject:
