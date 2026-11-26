@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     [Tooltip("How long movement is locked after each action (seconds). Match your clip lengths.")]
     [SerializeField] private float attackLockTime = 0.8f;
     [SerializeField] private float hitLockTime = 0.5f;
-    [SerializeField] private int attackComboCount = 2;
 
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
     private static readonly int InCombatHash = Animator.StringToHash("InCombat");
