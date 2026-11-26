@@ -80,7 +80,8 @@ public class MazeBuilder : MonoBehaviour
 
         spawnCells = MazeGenerator.GenerateSpawns(maze, playersPrefab.Count, seed, 12, 2);
 
-        cameraAnimator.BeginOrbit(center);
+        if (cameraAnimator != null)
+            cameraAnimator.BeginOrbit(center);
 
         StartCoroutine(BuildMaze(maze, width, height, center));
     }
@@ -114,7 +115,8 @@ public class MazeBuilder : MonoBehaviour
         for (int i = 0; i < playersPrefab.Count; i++)
             players.Add(Instantiate(playersPrefab[i], new Vector3(spawnCells[i].x * cellSize, 0f, spawnCells[i].y * cellSize), Quaternion.identity, generatedRoot));
 
-        yield return StartCoroutine(cameraAnimator.FinishOrbit(players[0].transform, 2f));
+        if (cameraAnimator != null)
+            yield return StartCoroutine(cameraAnimator.FinishOrbit(players[0].transform, 2f));
     }
 
     private void CreateFloor(Vector3 position, int width, int height)
